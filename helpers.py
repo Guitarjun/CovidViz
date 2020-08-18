@@ -4,12 +4,12 @@ from sklearn.linear_model import LinearRegression
 from io import StringIO
 import numpy as np
 
-__all__ = ['download_csv', 'combine_state_data', 'update_geo', 'q2_state_plotter']
+__all__ = ['download_convert_csv', 'combine_state_data', 'update_geo', 'pre_floyd_state_plotter']
 
 
-def download_csv(url: str) -> pd.DataFrame:
+def download_convert_csv(url: str) -> pd.DataFrame:
     """
-    Downloads .csv file from the given link and converts it to a pandas DataFrame
+
     :param url: URL of a .csv download
     :return: DataFrame based on url .csv
     """
@@ -54,7 +54,7 @@ def update_geo(df: gpd.GeoDataFrame, to_drop: str, latest=False):
     return df
 
 
-def q2_state_plotter(data: pd.DataFrame, state_name: str, axs, subplot: int):
+def pre_floyd_state_plotter(data: pd.DataFrame, state_name: str, axs, subplot: int):
     """
     Plots cases over time with both a linear and polynomial model trained with pre-May 25 case data
     :param subplot: indicates which subplot of the given axis to plot over
