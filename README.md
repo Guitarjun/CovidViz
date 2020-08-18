@@ -1,7 +1,6 @@
-# cse163-project
-***Exploring Covid-19’s Implications in the US***
+# Exploring Covid-19’s Implications in the US
 
-This program generates various visualizations and simple regression models regarding the Covid-19 Pandemic in the US.
+*This program generates various visualizations and simple regression models regarding the Covid-19 Pandemic in the US.*
 By @Guitajun and @danielqiang
 
 Requires Python 3.7 or later.
