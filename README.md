@@ -11,7 +11,7 @@ Requires Python 3.7 or later.
 [GeoPandas](https://geopandas.org/),
 [scikit-learn](https://scikit-learn.org/stable/). 
 
-## Generate Results
+## Generate Research Results
 1. Clone and download [our repository](https://github.com/danielqiang/cse163-project)
 2. Install required dependencies
 3. Run `main.py` to generate result visualizations (result graphs will be saved to `results` directory)
@@ -21,4 +21,8 @@ Requires Python 3.7 or later.
    - Question 3: results/recovery_rates.png
    - Question 4: results/cases_by_age_sf.png
    - Question 5: results/largest_reductions.png, results/reductions_map.png
+   
+## Covid-19 Visualizations
+Uses continuously updated data sets from [this NYTimes repository](https://github.com/nytimes/covid-19-data) and [the COVID Tracking Project](https://covidtracking.com/) (will be converted to API) in order to showcase (relatively) real-time data visualizations about the Covid-19 Pandemic.
+1. Run `project.py` to generate visualization maps
    
