@@ -208,6 +208,92 @@ def q5():
 
 
 def main():
+    # TODO: STORE FILES AND DOWNLOADS
+_US_STATES_DATA_NYTIMES_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv'
+_US_DATA_NYTIMES_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv'
+_GLOBAL_RECOVERIES_URL = 'https://data.humdata.org/hxlproxy/data/download' \
+                         '/time_series_covid19_recovered_global_narrow.csv?dest=data_edit&filter01=merge&merge' \
+                         '-url01=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX' \
+                         '-1vTglKQRXpkKSErDiWG6ycqEth32MY0reMuVGhaslImLjfuLU0EUgyyu2e-3vKDArjqGX7dXEBV8FJ4f%2Fpub' \
+                         '%3Fgid%3D1326629740%26single%3Dtrue%26output%3Dcsv&merge-keys01=%23country%2Bname&merge' \
+                         '-tags01=%23country%2Bcode%2C%23region%2Bmain%2Bcode%2C%23region%2Bsub%2Bcode%2C' \
+                         '%23region%2Bintermediate%2Bcode&filter02=merge&merge-url02=https%3A%2F%2Fdocs.google' \
+                         '.com%2Fspreadsheets%2Fd%2Fe%2F2PACX' \
+                         '-1vTglKQRXpkKSErDiWG6ycqEth32MY0reMuVGhaslImLjfuLU0EUgyyu2e-3vKDArjqGX7dXEBV8FJ4f%2Fpub' \
+                         '%3Fgid%3D398158223%26single%3Dtrue%26output%3Dcsv&merge-keys02=%23adm1%2Bname&merge' \
+                         '-tags02=%23country%2Bcode%2C%23region%2Bmain%2Bcode%2C%23region%2Bsub%2Bcode%2C' \
+                         '%23region%2Bintermediate%2Bcode&merge-replace02=on&merge-overwrite02=on&filter03' \
+                         '=explode&explode-header-att03=date&explode-value-att03=value&filter04=rename&rename' \
+                         '-oldtag04=%23affected%2Bdate&rename-newtag04=%23date&rename-header04=Date&filter05' \
+                         '=rename&rename-oldtag05=%23affected%2Bvalue&rename-newtag05=%23affected%2Binfected' \
+                         '%2Bvalue%2Bnum&rename-header05=Value&filter06=clean&clean-date-tags06=%23date&filter07' \
+                         '=sort&sort-tags07=%23date&sort-reverse07=on&filter08=sort&sort-tags08=%23country%2Bname' \
+                         '%2C%23adm1%2Bname&tagger-match-all=on&tagger-default-tag=%23affected%2Blabel&tagger-01' \
+                         '-header=province%2Fstate&tagger-01-tag=%23adm1%2Bname&tagger-02-header=country%2Fregion' \
+                         '&tagger-02-tag=%23country%2Bname&tagger-03-header=lat&tagger-03-tag=%23geo%2Blat&tagger' \
+                         '-04-header=long&tagger-04-tag=%23geo%2Blon&header-row=1&url=https%3A%2F%2Fraw' \
+                         '.githubusercontent.com%2FCSSEGISandData%2FCOVID-19%2Fmaster%2Fcsse_covid_19_data' \
+                         '%2Fcsse_covid_19_time_series%2Ftime_series_covid19_recovered_global.csv'
+
+# TODO: Use API instead
+_US_DATA_COVIDTRACKING_URL = 'https://covidtracking.com/api/v1/us/daily.csv'
+_US_STATES_DATA__COVIDRACKING_URL = 'https://covidtracking.com/api/v1/states/daily.csv'
+
+
+def main():
+    us_states_data_nytimes = p.download_convert_csv(_US_STATES_DATA_NYTIMES_URL)
+    # us_data_nytimes = p.download_convert_csv(_US_DATA_NYTIMES_URL)
+    # us_states_data_covidtracking = p.download_convert_csv(_US_STATES_DATA__COVIDRACKING_URL)
+    # us_data_covidtracking = p.download_convert_csv(_US_DATA_COVIDTRACKING_URL)
+    # global_data = p.download_convert_csv(_GLOBAL_RECOVERIES_URL)
+
+    # Merging US data
+    # us_data_covidtracking['date'] = pd.to_datetime(us_data_covidtracking['date'], format='%Y%m%d')
+    # us_data_nytimes['date'] = pd.to_datetime(us_data_nytimes['date'])
+    # us_data = us_data_covidtracking.merge(us_data_nytimes, how='inner', left_on='date', right_on='date')
+
+    # Merging US State data TODO
+    # us_states_data_nytimes['date'] = pd.to_datetime(us_states_data_nytimes['date'])
+    # print(us_states_data_covidtracking.to_string())
+    # print('=' * 100)
+    # print(us_states_data_nytimes.to_string())
+
+    merged_map = p.combine_state_data('NAME', 'state', us_states_data_nytimes)  # Change this
+    fig, axs = plt.subplots(ncols=1, nrows=2)
+
+    # Masks date with rows only of most recent dates
+    merged_map = p.update_geo(df=merged_map, to_drop='state')
+
+    # Converts 'date' column to datetime column and gets the most recent date
+    merged_map['date'] = pd.to_datetime(merged_map['date'])
+    recent_date = merged_map['date'].max()
+
+    # plotting
+    merged_map.plot(column='cases', linewidth=0.5, edgecolor='black', cmap='Reds', legend=True,
+                    legend_kwds={'label': "Active Cases", 'orientation': "horizontal"}, ax=axs[0])
+    axs[0].set_title('Covid-19 Cases in the US by State: ' + str(recent_date.date()))
+    axs[0].axis('off')
+
+    merged_map.plot(column='deaths', linewidth=0.5, edgecolor='black', cmap='Reds', legend=True,
+                    legend_kwds={'label': "Total Deaths", 'orientation': "horizontal"}, ax=axs[1])
+    axs[1].set_title('Covid-19 Deaths in the US by State: ' + str(recent_date.date()))
+    axs[1].axis('off')
+
+    fig.tight_layout(pad=2.0)
+    fig.savefig('states.png', bbox_inches='tight')
+
+    # Joining/reformatting data
+    # us_mask = global_data['Country/Region'] == 'US'
+    # global_data = global_data[us_mask]
+    # global_data = global_data[['Value', 'Date']]
+    # us_combined_data = us_data_nytimes.merge(global_data, how='inner', left_on='date', right_on='Date')
+    # us_combined_data.rename(columns={'Value': 'recoveries'}, inplace=True)
+    # us_combined_data = us_combined_data.drop(columns='Date')
+    # us_combined_data['recoveries'] = us_combined_data['recoveries'].astype('int64')
+    #
+    # us_combined_data.index = pd.to_datetime(us_combined_data['date'])
+    # us_combined_data.drop(['date'], axis=1, inplace=True)
+    
     q1()
     q2()
     q3()
