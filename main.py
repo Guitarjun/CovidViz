@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
-from helpers import download_csv, q2_state_plotter, combine_state_data, update_geo
+from helpers import download_convert_csv, pre_floyd_state_plotter, combine_state_data, update_geo
 import datetime
 import requests
 
@@ -16,7 +16,7 @@ def q1():
     import numpy as np
     flu_hospitalizations2019 = 490561
 
-    us_data = download_csv(_US_COMPREHENSIVE_URL)
+    us_data = download_convert_csv(_US_COMPREHENSIVE_URL)
 
     # Convert to Time Series
     us_data.index = pd.to_datetime(us_data['date'], format='%Y%m%d')
@@ -61,7 +61,7 @@ def q2():
     # FOR TESTING
     # Tests question with local copy of the data
     try:
-        us_states_df = download_csv(_US_STATES_DATA_URL)
+        us_states_df = download_convert_csv(_US_STATES_DATA_URL)
     except requests.exceptions.RequestException as e:
         print(SystemExit(e))
         print('Using local copy...')
@@ -71,10 +71,10 @@ def q2():
     fig, axs = plt.subplots(2, figsize=(15, 8))
 
     # Washington
-    q2_state_plotter(data=us_states_df, state_name='Washington', axs=axs, subplot=0)
+    pre_floyd_state_plotter(data=us_states_df, state_name='Washington', axs=axs, subplot=0)
 
     # Minnesota
-    q2_state_plotter(data=us_states_df, state_name='Minnesota', axs=axs, subplot=1)
+    pre_floyd_state_plotter(data=us_states_df, state_name='Minnesota', axs=axs, subplot=1)
 
     # Save
     fig.tight_layout(pad=2.0)
@@ -105,8 +105,8 @@ def q3():
                              '-04-header=long&tagger-04-tag=%23geo%2Blon&header-row=1&url=https%3A%2F%2Fraw' \
                              '.githubusercontent.com%2FCSSEGISandData%2FCOVID-19%2Fmaster%2Fcsse_covid_19_data' \
                              '%2Fcsse_covid_19_time_series%2Ftime_series_covid19_recovered_global.csv'
-    global_recoveries_data = download_csv(_GLOBAL_RECOVERIES_URL)
-    us_data = download_csv(_US_DATA_URL)
+    global_recoveries_data = download_convert_csv(_GLOBAL_RECOVERIES_URL)
+    us_data = download_convert_csv(_US_DATA_URL)
 
     # Joining/reformatting data
     us_mask = global_recoveries_data['Country/Region'] == 'US'
@@ -135,7 +135,7 @@ def q3():
 
 
 def q4():
-    df = download_csv(_US_CASES_BY_AGE_URL)
+    df = download_convert_csv(_US_CASES_BY_AGE_URL)
     df['Specimen Collection Date'] = df['Specimen Collection Date'].apply(pd.to_datetime)
     df.drop(columns=['Unnamed: 0', 'New Confirmed Cases'], inplace=True, errors='ignore')
 
@@ -163,7 +163,7 @@ def q4():
 
 
 def q5():
-    df = download_csv(_US_STATES_DATA_URL)
+    df = download_convert_csv(_US_STATES_DATA_URL)
     df['date'] = df['date'].apply(pd.to_datetime)
 
     fig, ax = plt.subplots(1)
@@ -208,39 +208,39 @@ def q5():
 
 
 def main():
+    
+    """
     # TODO: STORE FILES AND DOWNLOADS
-_US_STATES_DATA_NYTIMES_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv'
-_US_DATA_NYTIMES_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv'
-_GLOBAL_RECOVERIES_URL = 'https://data.humdata.org/hxlproxy/data/download' \
-                         '/time_series_covid19_recovered_global_narrow.csv?dest=data_edit&filter01=merge&merge' \
-                         '-url01=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX' \
-                         '-1vTglKQRXpkKSErDiWG6ycqEth32MY0reMuVGhaslImLjfuLU0EUgyyu2e-3vKDArjqGX7dXEBV8FJ4f%2Fpub' \
-                         '%3Fgid%3D1326629740%26single%3Dtrue%26output%3Dcsv&merge-keys01=%23country%2Bname&merge' \
-                         '-tags01=%23country%2Bcode%2C%23region%2Bmain%2Bcode%2C%23region%2Bsub%2Bcode%2C' \
-                         '%23region%2Bintermediate%2Bcode&filter02=merge&merge-url02=https%3A%2F%2Fdocs.google' \
-                         '.com%2Fspreadsheets%2Fd%2Fe%2F2PACX' \
-                         '-1vTglKQRXpkKSErDiWG6ycqEth32MY0reMuVGhaslImLjfuLU0EUgyyu2e-3vKDArjqGX7dXEBV8FJ4f%2Fpub' \
-                         '%3Fgid%3D398158223%26single%3Dtrue%26output%3Dcsv&merge-keys02=%23adm1%2Bname&merge' \
-                         '-tags02=%23country%2Bcode%2C%23region%2Bmain%2Bcode%2C%23region%2Bsub%2Bcode%2C' \
-                         '%23region%2Bintermediate%2Bcode&merge-replace02=on&merge-overwrite02=on&filter03' \
-                         '=explode&explode-header-att03=date&explode-value-att03=value&filter04=rename&rename' \
-                         '-oldtag04=%23affected%2Bdate&rename-newtag04=%23date&rename-header04=Date&filter05' \
-                         '=rename&rename-oldtag05=%23affected%2Bvalue&rename-newtag05=%23affected%2Binfected' \
-                         '%2Bvalue%2Bnum&rename-header05=Value&filter06=clean&clean-date-tags06=%23date&filter07' \
-                         '=sort&sort-tags07=%23date&sort-reverse07=on&filter08=sort&sort-tags08=%23country%2Bname' \
-                         '%2C%23adm1%2Bname&tagger-match-all=on&tagger-default-tag=%23affected%2Blabel&tagger-01' \
-                         '-header=province%2Fstate&tagger-01-tag=%23adm1%2Bname&tagger-02-header=country%2Fregion' \
-                         '&tagger-02-tag=%23country%2Bname&tagger-03-header=lat&tagger-03-tag=%23geo%2Blat&tagger' \
-                         '-04-header=long&tagger-04-tag=%23geo%2Blon&header-row=1&url=https%3A%2F%2Fraw' \
-                         '.githubusercontent.com%2FCSSEGISandData%2FCOVID-19%2Fmaster%2Fcsse_covid_19_data' \
-                         '%2Fcsse_covid_19_time_series%2Ftime_series_covid19_recovered_global.csv'
+    _US_STATES_DATA_NYTIMES_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv'
+    _US_DATA_NYTIMES_URL = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us.csv'
+    _GLOBAL_RECOVERIES_URL = 'https://data.humdata.org/hxlproxy/data/download' \
+                             '/time_series_covid19_recovered_global_narrow.csv?dest=data_edit&filter01=merge&merge' \
+                             '-url01=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX' \
+                             '-1vTglKQRXpkKSErDiWG6ycqEth32MY0reMuVGhaslImLjfuLU0EUgyyu2e-3vKDArjqGX7dXEBV8FJ4f%2Fpub' \
+                             '%3Fgid%3D1326629740%26single%3Dtrue%26output%3Dcsv&merge-keys01=%23country%2Bname&merge' \
+                             '-tags01=%23country%2Bcode%2C%23region%2Bmain%2Bcode%2C%23region%2Bsub%2Bcode%2C' \
+                             '%23region%2Bintermediate%2Bcode&filter02=merge&merge-url02=https%3A%2F%2Fdocs.google' \
+                             '.com%2Fspreadsheets%2Fd%2Fe%2F2PACX' \
+                             '-1vTglKQRXpkKSErDiWG6ycqEth32MY0reMuVGhaslImLjfuLU0EUgyyu2e-3vKDArjqGX7dXEBV8FJ4f%2Fpub' \
+                             '%3Fgid%3D398158223%26single%3Dtrue%26output%3Dcsv&merge-keys02=%23adm1%2Bname&merge' \
+                             '-tags02=%23country%2Bcode%2C%23region%2Bmain%2Bcode%2C%23region%2Bsub%2Bcode%2C' \
+                             '%23region%2Bintermediate%2Bcode&merge-replace02=on&merge-overwrite02=on&filter03' \
+                             '=explode&explode-header-att03=date&explode-value-att03=value&filter04=rename&rename' \
+                             '-oldtag04=%23affected%2Bdate&rename-newtag04=%23date&rename-header04=Date&filter05' \
+                             '=rename&rename-oldtag05=%23affected%2Bvalue&rename-newtag05=%23affected%2Binfected' \
+                             '%2Bvalue%2Bnum&rename-header05=Value&filter06=clean&clean-date-tags06=%23date&filter07' \
+                             '=sort&sort-tags07=%23date&sort-reverse07=on&filter08=sort&sort-tags08=%23country%2Bname' \
+                             '%2C%23adm1%2Bname&tagger-match-all=on&tagger-default-tag=%23affected%2Blabel&tagger-01' \
+                             '-header=province%2Fstate&tagger-01-tag=%23adm1%2Bname&tagger-02-header=country%2Fregion' \
+                             '&tagger-02-tag=%23country%2Bname&tagger-03-header=lat&tagger-03-tag=%23geo%2Blat&tagger' \
+                             '-04-header=long&tagger-04-tag=%23geo%2Blon&header-row=1&url=https%3A%2F%2Fraw' \
+                             '.githubusercontent.com%2FCSSEGISandData%2FCOVID-19%2Fmaster%2Fcsse_covid_19_data' \
+                             '%2Fcsse_covid_19_time_series%2Ftime_series_covid19_recovered_global.csv'
 
-# TODO: Use API instead
-_US_DATA_COVIDTRACKING_URL = 'https://covidtracking.com/api/v1/us/daily.csv'
-_US_STATES_DATA__COVIDRACKING_URL = 'https://covidtracking.com/api/v1/states/daily.csv'
+    # TODO: Use API instead
+    _US_DATA_COVIDTRACKING_URL = 'https://covidtracking.com/api/v1/us/daily.csv'
+    _US_STATES_DATA__COVIDRACKING_URL = 'https://covidtracking.com/api/v1/states/daily.csv'
 
-
-def main():
     us_states_data_nytimes = p.download_convert_csv(_US_STATES_DATA_NYTIMES_URL)
     # us_data_nytimes = p.download_convert_csv(_US_DATA_NYTIMES_URL)
     # us_states_data_covidtracking = p.download_convert_csv(_US_STATES_DATA__COVIDRACKING_URL)
@@ -293,6 +293,7 @@ def main():
     #
     # us_combined_data.index = pd.to_datetime(us_combined_data['date'])
     # us_combined_data.drop(['date'], axis=1, inplace=True)
+    """
     
     q1()
     q2()
