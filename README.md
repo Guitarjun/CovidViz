@@ -19,7 +19,7 @@ Requires Python 3.7 or later.
    - Question 1: results/us_hospitalizations.png
    - Question 2: results/floyd_model_cases.png
    - Question 3: results/recovery_rates.png
-   - Question 4: results/cases_by_age_sf.png
+   - Question 4: results/cases_by_age.png
    - Question 5: results/largest_reductions.png, results/reductions_map.png
    
 ## Covid-19 Visualizations
