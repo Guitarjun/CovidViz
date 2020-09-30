@@ -28,5 +28,6 @@ Uses continuously updated data sets from [this NYTimes repository](https://githu
 
 ## Examples:
 
+![Map](results/reductions_map.png)
 ![Floyd](results/floyd_model_cases.png)
-   
+![Hospitalizations](results/us_hospitalizations.png)
