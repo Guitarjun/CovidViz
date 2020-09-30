@@ -25,4 +25,8 @@ Requires Python 3.7 or later.
 ## Covid-19 Visualizations
 Uses continuously updated data sets from [this NYTimes repository](https://github.com/nytimes/covid-19-data) and [the COVID Tracking Project](https://covidtracking.com/) (will be converted to API) in order to showcase (relatively) real-time data visualizations about the Covid-19 Pandemic.
 1. Run `project.py` to generate visualization maps
+
+## Examples:
+
+![Floyd](results/floyd_model_cases.png)
    
